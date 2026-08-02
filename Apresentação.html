@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zephiro — AI Glasses Brasil</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #08090E;
+    --surface:   #0F1018;
+    --surface2:  #161820;
+    --cyan:      #4FD1FF;
+    --violet:    #A78BFA;
+    --white:     #F0F4FF;
+    --muted:     #64748B;
+    --border:    rgba(79,209,255,0.12);
+    --grad:      linear-gradient(135deg, #4FD1FF22, #A78BFA22);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── TYPOGRAPHY ─── */
+  h1, h2, h3, h4 { font-family: 'Space Grotesk', sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ─── LAYOUT ─── */
+  .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 80px 0; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,9,14,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 1.1rem; letter-spacing: 0.04em;
+    color: var(--cyan);
+  }
+  .nav-badge {
+    font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    color: var(--muted); letter-spacing: 0.05em;
+    border: 1px solid var(--border); border-radius: 20px;
+    padding: 4px 12px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding-top: 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 60%, rgba(79,209,255,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 70% 30%, rgba(167,139,250,0.06) 0%, transparent 60%);
+  }
+  .hero-content { position: relative; z-index: 1; text-align: center; }
+
+  /* ─── Glasses SVG + Pulse ─── */
+  .glasses-wrap {
+    position: relative;
+    width: 220px; height: 100px;
+    margin: 0 auto 48px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pulse-ring {
+    position: absolute; inset: -20px;
+    border-radius: 50%;
+    border: 1px solid var(--cyan);
+    opacity: 0;
+    animation: pulse 3s ease-out infinite;
+  }
+  .pulse-ring:nth-child(2) { animation-delay: 1s; }
+  .pulse-ring:nth-child(3) { animation-delay: 2s; }
+  @keyframes pulse {
+    0%   { transform: scale(0.6); opacity: 0.5; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+  .glasses-svg { position: relative; z-index: 1; }
+
+  .hero-eyebrow {
+    font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--cyan); font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 16px;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 700; line-height: 1.1;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--white) 40%, var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-sub {
+    font-size: 1.1rem; color: rgba(240,244,255,0.65);
+    max-width: 580px; margin: 0 auto 40px;
+  }
+  .hero-tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .tag.highlight { border-color: rgba(79,209,255,0.4); color: var(--cyan); }
+
+  /* ─── SECTION LABELS ─── */
+  .section-label {
+    font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--cyan); margin-bottom: 12px; display: block;
+  }
+  .section-title {
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 600; line-height: 1.2; margin-bottom: 16px;
+  }
+  .section-body {
+    color: rgba(240,244,255,0.65); font-size: 1rem; line-height: 1.75;
+    max-width: 640px;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    border: none; border-top: 1px solid var(--border); margin: 0;
+  }
+
+  /* ─── PROBLEMA ─── */
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; margin-top: 40px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 20px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.2rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-desc { font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+
+  /* ─── SOLUÇÃO / FLUXO ─── */
+  .flow {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; flex-wrap: wrap; margin-top: 48px;
+  }
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px;
+    text-align: center; min-width: 150px;
+    position: relative;
+  }
+  .flow-node .icon { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+  .flow-node .label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem; font-weight: 500;
+  }
+  .flow-node .sub { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+  .flow-arrow {
+    color: var(--cyan); font-size: 1.4rem; padding: 0 8px;
+    flex-shrink: 0;
+  }
+  .flow-node.accent { border-color: rgba(79,209,255,0.4); }
+
+  /* ─── MÓDULOS ─── */
+  .modules { margin-top: 48px; display: flex; flex-direction: column; gap: 16px; }
+  .module {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px 28px;
+    display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start;
+    transition: border-color 0.2s;
+  }
+  .module:hover { border-color: rgba(79,209,255,0.3); }
+  .module-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; flex-shrink: 0;
+  }
+  .module-icon.cam  { background: rgba(79,209,255,0.12); }
+  .module-icon.mic  { background: rgba(167,139,250,0.12); }
+  .module-icon.spk  { background: rgba(52,211,153,0.12); }
+  .module-icon.ai   { background: rgba(251,191,36,0.12); }
+  .module-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; margin-bottom: 6px;
+  }
+  .module-desc { font-size: 0.9rem; color: rgba(240,244,255,0.6); line-height: 1.6; }
+  .module-tech {
+    margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .chip {
+    font-size: 0.68rem; font-family: 'JetBrains Mono', monospace;
+    padding: 3px 10px; border-radius: 4px;
+    background: rgba(79,209,255,0.08); color: var(--cyan);
+    border: 1px solid rgba(79,209,255,0.2);
+  }
+  .chip.v { background: rgba(167,139,250,0.08); color: var(--violet); border-color: rgba(167,139,250,0.2); }
+  .chip.g { background: rgba(52,211,153,0.08); color: #34D399; border-color: rgba(52,211,153,0.2); }
+  .chip.y { background: rgba(251,191,36,0.08); color: #FBBF24; border-color: rgba(251,191,36,0.2); }
+
+  /* ─── ARQUITETURA MOBILE ─── */
+  .arch {
+    margin-top: 48px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 36px;
+  }
+  .arch-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 1rem; margin-bottom: 28px;
+    color: var(--cyan);
+  }
+  .arch-layers { display: flex; flex-direction: column; gap: 12px; }
+  .arch-layer {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 18px; border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .arch-layer.l1 { background: rgba(79,209,255,0.06); }
+  .arch-layer.l2 { background: rgba(167,139,250,0.06); }
+  .arch-layer.l3 { background: rgba(52,211,153,0.06); }
+  .arch-icon { font-size: 1.2rem; flex-shrink: 0; width: 32px; text-align: center; }
+  .arch-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500; font-size: 0.9rem; min-width: 180px;
+  }
+  .arch-detail { font-size: 0.82rem; color: var(--muted); }
+  .arch-arrow {
+    text-align: center; color: var(--muted);
+    font-size: 0.8rem; padding: 4px 0; letter-spacing: 0.05em;
+  }
+
+  /* ─── CHECKPOINTS ─── */
+  .checks { margin-top: 40px; display: flex; flex-direction: column; gap: 12px; }
+  .check {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 18px 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .check-ok {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(52,211,153,0.15);
+    border: 1px solid rgba(52,211,153,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: #34D399; flex-shrink: 0; margin-top: 1px;
+  }
+  .check-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500; font-size: 0.9rem; margin-bottom: 4px;
+  }
+  .check-desc { font-size: 0.82rem; color: var(--muted); }
+
+  /* ─── TRILHA ─── */
+  .trilha-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 24px;
+    border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 12px; margin-top: 28px;
+    background: rgba(167,139,250,0.06);
+  }
+  .trilha-label {
+    font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
+    margin-right: 4px;
+  }
+  .trilha-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600; font-size: 1rem; color: var(--violet);
+  }
+
+  /* ─── ROADMAP ─── */
+  .roadmap { margin-top: 48px; display: flex; flex-direction: column; gap: 0; }
+  .road-step {
+    display: flex; gap: 24px; padding-bottom: 32px;
+    position: relative;
+  }
+  .road-step:not(:last-child)::before {
+    content: '';
+    position: absolute; left: 15px; top: 32px; bottom: 0;
+    width: 1px; background: var(--border);
+  }
+  .road-dot {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;
+    z-index: 1;
+  }
+  .road-dot.done  { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.5); color: #34D399; }
+  .road-dot.now   { background: rgba(79,209,255,0.15); border: 1px solid var(--cyan); color: var(--cyan); }
+  .road-dot.next  { background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+  .road-body { padding-top: 4px; }
+  .road-phase {
+    font-size: 0.7rem; font-family: 'JetBrains Mono', monospace;
+    color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .road-title {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+  .road-desc { font-size: 0.82rem; color: var(--muted); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 24px; text-align: center;
+    color: var(--muted); font-size: 0.82rem;
+  }
+  footer span { color: var(--cyan); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .flow { gap: 8px; }
+    .flow-arrow { transform: rotate(90deg); }
+    .flow { flex-direction: column; align-items: center; }
+    .arch-layer { flex-direction: column; gap: 8px; }
+    .arch-name { min-width: unset; }
+    .module { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">ZEPHIRO</span>
+  <span class="nav-badge">AI Glasses Brasil · Trilha Acessibilidade</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content container">
+
+    <div class="glasses-wrap">
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <div class="pulse-ring"></div>
+      <svg class="glasses-svg" width="210" height="80" viewBox="0 0 210 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Ponte -->
+        <path d="M83 38 Q105 30 127 38" stroke="#4FD1FF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Lente esquerda -->
+        <rect x="10" y="20" width="68" height="40" rx="18" stroke="#4FD1FF" stroke-width="2" fill="rgba(79,209,255,0.05)"/>
+        <!-- Lente direita -->
+        <rect x="132" y="20" width="68" height="40" rx="18" stroke="#4FD1FF" stroke-width="2" fill="rgba(79,209,255,0.05)"/>
+        <!-- Hastes -->
+        <line x1="10" y1="32" x2="2" y2="32" stroke="#4FD1FF" stroke-width="2" stroke-linecap="round"/>
+        <line x1="200" y1="32" x2="208" y2="32" stroke="#4FD1FF" stroke-width="2" stroke-linecap="round"/>
+        <!-- Câmera ponto -->
+        <circle cx="44" cy="40" r="4" fill="#4FD1FF" opacity="0.8"/>
+        <circle cx="166" cy="40" r="2" fill="#A78BFA" opacity="0.6"/>
+        <!-- Mic ponto -->
+        <circle cx="72" cy="50" r="2.5" fill="#A78BFA" opacity="0.7"/>
+        <!-- Scan lines animadas -->
+        <line x1="22" y1="40" x2="68" y2="40" stroke="#4FD1FF" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.4">
+          <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2s" repeatCount="indefinite"/>
+        </line>
+      </svg>
+    </div>
+
+    <p class="hero-eyebrow">Programa AI Glasses Brasil — CEIA · Meta · UFG</p>
+    <h1 class="hero-title">Óculos que falam<br>pelo que os olhos não podem ver</h1>
+    <p class="hero-sub">
+      Zephiro é uma solução de acessibilidade para pessoas com deficiência visual que usa câmera, voz e áudio dos Meta AI Glasses para descrever o ambiente em tempo real, via agente de IA rodando no smartphone.
+    </p>
+    <div class="hero-tags">
+      <span class="tag highlight">Acessibilidade</span>
+      <span class="tag">Meta AI Glasses</span>
+      <span class="tag">Visão computacional</span>
+      <span class="tag">Agente de IA por voz</span>
+      <span class="tag">Android</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PROBLEMA -->
+<section>
+  <div class="container">
+    <span class="section-label">O Problema</span>
+    <h2 class="section-title">Navegar o mundo sem visão exige informação constante</h2>
+    <p class="section-body">
+      Pessoas com deficiência visual dependem de bengalas, cães-guia e auxiliares humanos para tarefas que videntes realizam automaticamente: reconhecer quem está na sala, ler o cardápio, atravessar uma rua movimentada ou identificar um produto na prateleira. Soluções existentes são isoladas, caras ou exigem hardware dedicado inacessível. Os Meta AI Glasses mudam essa equação: câmera, microfone e alto-falante já estão integrados em um óculos comum.
+    </p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-num">6,5M</div>
+        <div class="stat-desc">brasileiros com deficiência visual severa (IBGE 2022)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">82%</div>
+        <div class="stat-desc">relatam dificuldade em mobilidade urbana sem auxílio</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0</div>
+        <div class="stat-desc">soluções acessíveis de IA embarcada em óculos no Brasil</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SOLUÇÃO / FLUXO -->
+<section>
+  <div class="container">
+    <span class="section-label">A Solução</span>
+    <h2 class="section-title">Câmera vê. IA entende. Óculos falam.</h2>
+    <p class="section-body">
+      Os óculos capturam o ambiente pela câmera e recebem comandos pelo microfone. O smartphone Android processa tudo localmente com o agente de IA e devolve a resposta como áudio direto nos alto-falantes dos óculos, sem display, sem toque, sem interrupção.
+    </p>
+
+    <div class="flow">
+      <div class="flow-node accent">
+        <span class="icon">👓</span>
+        <div class="label">Meta AI Glasses</div>
+        <div class="sub">Câmera · Mic · Speaker</div>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node accent">
+        <span class="icon">📱</span>
+        <div class="label">App Android</div>
+        <div class="sub">Agente IA local</div>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-node">
+        <span class="icon">🔊</span>
+        <div class="label">Resposta em Áudio</div>
+        <div class="sub">Alto-falante dos óculos</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- MÓDULOS TÉCNICOS -->
+<section>
+  <div class="container">
+    <span class="section-label">Módulos Técnicos</span>
+    <h2 class="section-title">Funcionalidades que transformam a experiência</h2>
+    <p class="section-body">
+      Cada módulo foi projetado para rodar com baixa latência no smartphone ou até no óculos se possível, usando os canais nativos dos óculos como entrada e saída.
+      Como temos muitos módulos, a ideia vai ser produzir em etapas para que ao concluir um dos módulos de forma funcional já possamos entregar uma experiência completa ao usuário, mesmo que parcial.
+    </p>
+    <div class="modules">
+
+      <div class="module">
+        <div class="module-icon cam">📷</div>
+        <div>
+          <div class="module-title">Detecção de objetos em tempo real</div>
+          <div class="module-desc">
+            A câmera dos óculos transmite frames continuamente para o app via Meta Wearables Device Access Toolkit. Um modelo de visão computacional leve identifica pessoas, veículos, obstáculos e objetos no campo visual, classificando-os por proximidade e relevância para o usuário.
+          </div>
+          <div class="module-tech">
+            <span class="chip">YOLOv8n</span>
+            <span class="chip">Camera DAT API</span>
+            <span class="chip">ONNX Runtime Android</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="module">
+        <div class="module-icon mic">🎤</div>
+        <div>
+          <div class="module-title">Comando de voz com wake word "Zephiro"</div>
+          <div class="module-desc">
+            O microfone dos óculos escuta continuamente. Ao detectar a palavra "Zephiro", o agente acorda e interpreta o comando seguinte: "descreva o ambiente", "tem alguém perto de mim?", "o que está na minha frente?". O reconhecimento roda offline diretamente no smartphone.
+          </div>
+          <div class="module-tech">
+            <span class="chip v">Mic DAT API</span>
+            <span class="chip v">ASR offline</span>
+            <span class="chip v">Wake word engine</span>
+            <span class="chip v">NLU local</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="module">
+        <div class="module-icon spk">🔊</div>
+        <div>
+          <div class="module-title">Alertas e respostas por áudio</div>
+          <div class="module-desc">
+            Toda saída ao usuário é entregue via alto-falante dos óculos — o único canal de saída disponível. Alertas proativos ("pessoa se aproximando pela esquerda") combinam com respostas sob demanda a comandos de voz. TTS leve e natural, sem latência perceptível.
+          </div>
+          <div class="module-tech">
+            <span class="chip g">Speaker DAT API</span>
+            <span class="chip g">TTS Android</span>
+            <span class="chip g">Fila de prioridade de áudio</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="module">
+        <div class="module-icon ai">🤖</div>
+        <div>
+          <div class="module-title">Agente de IA contextual</div>
+          <div class="module-desc">
+            Um agente leve coordena detecção visual, reconhecimento de voz e síntese de resposta — idealizado para rodar diretamente nos óculos, sem depender do smartphone. Onde o hardware dos óculos não suportar o modelo completo, o processamento cai para o smartphone pareado via Bluetooth, mantendo a experiência idêntica para o usuário. Sem internet, sem latência de rede.
+          </div>
+          <div class="module-tech">
+            <span class="chip y">On-device nos óculos</span>
+            <span class="chip y">Fallback Android</span>
+            <span class="chip y">Gemini Nano / LLM embarcado</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="module">
+        <div class="module-icon" style="background:rgba(251,113,133,0.12);">🗺️</div>
+        <div>
+          <div class="module-title">Memória de trajetos — Zephiro Guide</div>
+          <div class="module-desc">
+            O usuário salva caminhos recorrentes — de casa ao trabalho, à farmácia, à escola — e os recupera por voz: "Zephiro, me guia para o mercado". O sistema combina GPS do smartphone com pontos de referência auditivos gravados pelo próprio usuário ("vire à direita após o portão") para criar uma navegação contextual e personalizada, sem depender de visão ou de conectividade constante.
+          </div>
+          <div class="module-tech">
+            <span class="chip" style="color:#FB7185;border-color:rgba(251,113,133,0.3);background:rgba(251,113,133,0.08);">GPS + sensor de movimento</span>
+            <span class="chip" style="color:#FB7185;border-color:rgba(251,113,133,0.3);background:rgba(251,113,133,0.08);">Waypoints por voz</span>
+            <span class="chip" style="color:#FB7185;border-color:rgba(251,113,133,0.3);background:rgba(251,113,133,0.08);">Reprodução offline</span>
+            <span class="chip" style="color:#FB7185;border-color:rgba(251,113,133,0.3);background:rgba(251,113,133,0.08);">Armazenamento local</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="module">
+        <div class="module-icon" style="background:rgba(251,191,36,0.10);">📄</div>
+        <div>
+          <div class="module-title">Leitura de documentos e textos — Zephiro Read</div>
+          <div class="module-desc">
+            A câmera dos óculos captura qualquer texto no campo visual — cardápios, placas, bulas, documentos, telas — e o Zephiro lê em voz alta em segundos. Funciona com um simples comando de voz: "Zephiro, leia isso". OCR leve roda on-device, sem enviar imagens para a nuvem, garantindo privacidade mesmo com documentos sensíveis.
+          </div>
+          <div class="module-tech">
+            <span class="chip y">OCR on-device</span>
+            <span class="chip y">Camera DAT API</span>
+            <span class="chip y">TTS neural</span>
+            <span class="chip y">Ativação por voz</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ARQUITETURA MOBILE -->
+<section>
+  <div class="container">
+    <span class="section-label">Arquitetura</span>
+    <h2 class="section-title">IA nos óculos, smartphone como suporte</h2>
+    <p class="section-body">
+      A arquitetura ideal do Zephiro roda o agente de IA diretamente nos Meta AI Glasses — câmera, processamento e resposta em áudio sem passar pelo smartphone. Onde o hardware dos óculos não suportar o modelo completo, o Meta Wearables Device Access Toolkit conecta os óculos ao app Android via Bluetooth, que assume o processamento. Para o usuário, a experiência é a mesma nos dois cenários.
+    </p>
+    <div class="arch">
+      <div class="arch-title">Camadas do sistema</div>
+      <div class="arch-layers">
+        <div class="arch-layer l1">
+          <span class="arch-icon">👓</span>
+          <span class="arch-name">Meta AI Glasses (hardware)</span>
+          <span class="arch-detail">Câmera HD · Microfone direcional · Alto-falantes abertos · Ray-Ban Wayfarer</span>
+        </div>
+        <div class="arch-arrow">↕ Bluetooth / Meta Wearables Device Access Toolkit</div>
+        <div class="arch-layer l2">
+          <span class="arch-icon">📱</span>
+          <span class="arch-name">App Zephiro (Android/Kotlin)</span>
+          <span class="arch-detail">DAT API · Pipeline de frames · ASR · Agente IA · TTS · Fila de áudio</span>
+        </div>
+        <div class="arch-arrow">↕ Inferência on-device</div>
+        <div class="arch-layer l3">
+          <span class="arch-icon">🧠</span>
+          <span class="arch-name">Modelos de IA embarcados</span>
+          <span class="arch-detail">YOLOv8n (ONNX) · ASR offline · Gemini Nano / modelo leve on-device · TTS neural</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CHECKPOINTS DO EDITAL -->
+<section>
+  <div class="container">
+    <span class="section-label">Aderência ao Edital</span>
+    <h2 class="section-title">Checkpoints técnicos obrigatórios</h2>
+    <p class="section-body">
+      O Zephiro foi desenhado desde a concepção para cobrir todos os cinco checkpoints do programa.
+    </p>
+    <div class="checks">
+      <div class="check">
+        <div class="check-ok">✓</div>
+        <div>
+          <div class="check-label">Uso de Inteligência Artificial</div>
+          <div class="check-desc">Detecção de objetos com YOLOv8n, ASR offline e agente de linguagem natural rodando localmente no smartphone durante o hackathon — comprovável em tempo real.</div>
+        </div>
+      </div>
+      <div class="check">
+        <div class="check-ok">✓</div>
+        <div>
+          <div class="check-label">Câmera e microfone como canal principal</div>
+          <div class="check-desc">100% das entradas do sistema passam pela câmera (visão) e microfone (comando de voz) dos óculos via Meta Wearables Device Access Toolkit. Nenhuma interação é feita pelo smartphone.</div>
+        </div>
+      </div>
+      <div class="check">
+        <div class="check-ok">✓</div>
+        <div>
+          <div class="check-label">Output por áudio</div>
+          <div class="check-desc">Toda resposta ao usuário é entregue pelos alto-falantes dos óculos. Não há display, toque ou notificação visual — o áudio é o único e exclusivo canal de saída, adequado para usuários com deficiência visual.</div>
+        </div>
+      </div>
+      <div class="check">
+        <div class="check-ok">✓</div>
+        <div>
+          <div class="check-label">Privacidade e dados</div>
+          <div class="check-desc">Todo processamento é local — câmera, ASR, detecção e síntese. Nenhum frame ou áudio é enviado a servidores externos. Sem armazenamento persistente de dados sensoriais.</div>
+        </div>
+      </div>
+      <div class="check">
+        <div class="check-ok">✓</div>
+        <div>
+          <div class="check-label">Eficiência de bateria</div>
+          <div class="check-desc">Pipeline com detecção a cada N frames configurável, ASR ativado apenas após wake word e modelo de IA quantizado reduzem significativamente o consumo. Modo silencioso desativa o pipeline de detecção quando solicitado por voz.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="trilha-badge">
+      <span class="trilha-label">Trilha</span>
+      <span class="trilha-value">Acessibilidade</span>
+      <span style="color: var(--muted); font-size: 0.82rem; margin-left: 8px;">— soluções que ampliam autonomia, inclusão e qualidade de vida por meio de visão e voz</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- VÍDEO DEMO -->
+<section>
+  <div class="container">
+    <span class="section-label">Protótipo em Ação</span>
+    <h2 class="section-title">Demonstração do MVP</h2>
+    <p class="section-body">
+      Detecção em tempo real com alerta sonoro de proximidade — o Zephiro identificando objetos e avisando o usuário por áudio, sem nenhuma interação manual.
+    </p>
+
+    <div style="
+      margin-top: 32px;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--surface);
+      border: 1px dashed rgba(79,209,255,0.25);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--muted);
+    ">
+      <!-- <span style="font-size: 2.5rem;">▶</span>
+      <video controls style="width:100%;border-radius:12px;">
+        <source src="IMPLEMENTAÇÃO.mp4" type="video/mp4">
+      </video> -->
+      <iframe width="100%" height="400"
+        src="https://www.youtube.com/embed/BA__GkffkrA"
+        frameborder="0" allowfullscreen
+        style="border-radius:12px;">
+      </iframe>
+    </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong style="color: var(--white); font-family: 'Space Grotesk', sans-serif;">ZEPHIRO</strong>
+  &nbsp;—&nbsp; Projeto submetido ao <span>Programa AI Glasses Brasil</span>
+  &nbsp;·&nbsp; CEIA · Meta · UFG · FUNAPE
+  <br><br>
+  <span style="font-size: 0.75rem;">Trilha Acessibilidade · Óculos que falam pelo que os olhos não podem ver</span>
+</footer>
+
+</body>
+</html>
